@@ -21,7 +21,7 @@ A Single Page Application for browsing and managing room listings in Lahore. Bui
 
 ## 🌐 Live Demo
 
-🔗 [https://roomsync-listings-xxxxx.web.app](https://roomsync-listings-xxxxx.web.app)
+🔗 [https://roomsync-2649c.web.app](https://roomsync-2649c.web.app)
 
 ## 👤 Author
 
