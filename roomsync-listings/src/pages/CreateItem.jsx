@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
 import { db } from '../firebase/config'
+import { useAuth } from '../contexts/AuthContext'
 
 const CreateItem = () => {
   // State for each form field
@@ -16,7 +17,7 @@ const CreateItem = () => {
     contactPhone: '',
     imageUrl: ''
   })
-
+  const { currentUser } = useAuth()
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
@@ -39,10 +40,15 @@ const CreateItem = () => {
 
       // Add a new document with form data
       await addDoc(listingsRef, {
-        ...formData,
-        rent: Number(formData.rent),  // Convert string to number
-        createdAt: serverTimestamp()
-      })
+  ...formData,
+  rent: Number(formData.rent),
+  createdAt: serverTimestamp(),
+  createdBy: {
+    uid: currentUser.uid,
+    displayName: currentUser.displayName || currentUser.email.split('@')[0],
+    email: currentUser.email,
+  },
+})
 
       // After saving, navigate to the All Listings page
       navigate('/all')

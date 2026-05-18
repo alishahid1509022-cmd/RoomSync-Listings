@@ -845,3 +845,241 @@ body.dark-mode .alert-error {
 
   .cta-title { font-size: 1.75rem; }
 }
+/* ========================================
+   AUTH PAGES — login, signup, forgot-password, profile
+   ======================================== */
+
+/* Centered narrow card layout for auth forms */
+.auth-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 80px);
+  padding: 2rem 1rem;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+body.dark-mode .auth-card {
+  background: var(--surface-dark, #1f2937);
+  border-color: var(--border-dark, #374151);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+.auth-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.75rem;
+  margin: 0 0 0.5rem 0;
+  text-align: center;
+  color: var(--text, #111827);
+}
+
+body.dark-mode .auth-title {
+  color: var(--text-dark, #f3f4f6);
+}
+
+.auth-subtitle {
+  text-align: center;
+  color: var(--text-muted, #6b7280);
+  margin: 0 0 2rem 0;
+  font-size: 0.95rem;
+}
+
+/* Divider between email form and Google sign-in */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+  color: var(--text-muted, #6b7280);
+  font-size: 0.85rem;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border, #e5e7eb);
+}
+
+body.dark-mode .auth-divider::before,
+body.dark-mode .auth-divider::after {
+  background: var(--border-dark, #374151);
+}
+
+/* Google sign-in button */
+.btn-google {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.7rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  background: #ffffff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-google:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.btn-google:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+body.dark-mode .btn-google {
+  background: #374151;
+  color: #f3f4f6;
+  border-color: #4b5563;
+}
+
+body.dark-mode .btn-google:hover:not(:disabled) {
+  background: #4b5563;
+}
+
+/* Footer links inside auth cards ("Don't have an account? Sign up") */
+.auth-footer {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-muted, #6b7280);
+}
+
+.auth-footer a {
+  color: #14b8a6;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
+}
+
+body.dark-mode .auth-footer a {
+  color: #5eead4;
+}
+
+/* Inline link inside auth pages (e.g. "Forgot password?") */
+.auth-inline-link {
+  display: block;
+  text-align: right;
+  font-size: 0.85rem;
+  margin-top: -0.5rem;
+  margin-bottom: 1rem;
+  color: #14b8a6;
+  text-decoration: none;
+}
+
+.auth-inline-link:hover {
+  text-decoration: underline;
+}
+
+body.dark-mode .auth-inline-link {
+  color: #5eead4;
+}
+
+/* Success message (e.g. password reset email sent) */
+.alert-success {
+  background: #ecfdf5;
+  border: 1px solid #10b981;
+  color: #065f46;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+body.dark-mode .alert-success {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: #10b981;
+  color: #6ee7b7;
+}
+
+/* Profile page sections */
+.profile-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border, #e5e7eb);
+}
+
+body.dark-mode .profile-section {
+  border-color: var(--border-dark, #374151);
+}
+
+.profile-section h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  color: var(--text, #111827);
+}
+
+body.dark-mode .profile-section h3 {
+  color: var(--text-dark, #f3f4f6);
+}
+
+.profile-info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  font-size: 0.95rem;
+}
+
+.profile-info-row strong {
+  color: var(--text-muted, #6b7280);
+  font-weight: 500;
+}
+
+/* Danger button for delete-account */
+.btn-danger {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.btn-danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.listing-poster {
+  font-size: 0.85rem;
+  color: var(--text-muted, #6b7280);
+  margin: 0.5rem 0;
+}
+
+.listing-poster strong {
+  color: var(--text, #111827);
+  font-weight: 500;
+}
+
+body.dark-mode .listing-poster strong {
+  color: var(--text-dark, #f3f4f6);
+}
+
+.poster-email {
+  opacity: 0.7;
+}

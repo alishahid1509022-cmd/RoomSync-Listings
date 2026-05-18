@@ -1,6 +1,7 @@
 // Firebase configuration for RoomSync Listings
 import { initializeApp } from 'firebase/app'
 import { getFirestore } from 'firebase/firestore'
+import { getAuth, GoogleAuthProvider } from 'firebase/auth'
 
 // Paste YOUR config object from Firebase console here
 const firebaseConfig = {
@@ -18,3 +19,9 @@ const app = initializeApp(firebaseConfig)
 
 // Initialize Firestore and export it for use in components
 export const db = getFirestore(app)
+
+// Initialize Auth and export it for use in components
+export const auth = getAuth(app)
+
+// Google sign-in provider — reused across the app
+export const googleProvider = new GoogleAuthProvider()

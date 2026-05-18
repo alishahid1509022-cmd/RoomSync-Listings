@@ -8,23 +8,16 @@ const ViewAll = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  // Fetch listings when component mounts
   useEffect(() => {
     const fetchListings = async () => {
       try {
-        // Build a query: get all listings, newest first
         const listingsRef = collection(db, 'listings')
         const q = query(listingsRef, orderBy('createdAt', 'desc'))
-
-        // Execute the query
         const snapshot = await getDocs(q)
-
-        // Convert each document to a plain object with its ID
-        const listingsData = snapshot.docs.map(doc => ({
+        const listingsData = snapshot.docs.map((doc) => ({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
         }))
-
         setListings(listingsData)
       } catch (err) {
         console.error('Error fetching listings:', err)
@@ -35,9 +28,8 @@ const ViewAll = () => {
     }
 
     fetchListings()
-  }, [])  // Empty dependency array = run once on mount
+  }, [])
 
-  // Loading state
   if (loading) {
     return (
       <div className="page">
@@ -47,7 +39,6 @@ const ViewAll = () => {
     )
   }
 
-  // Error state
   if (error) {
     return (
       <div className="page">
@@ -57,7 +48,6 @@ const ViewAll = () => {
     )
   }
 
-  // Empty state
   if (listings.length === 0) {
     return (
       <div className="page">
@@ -70,13 +60,14 @@ const ViewAll = () => {
     )
   }
 
-  // Success state — show grid of cards
   return (
     <div className="page">
       <div className="page-header">
         <div>
           <h1 className="page-title">All Listings</h1>
-          <p className="page-subtitle">{listings.length} room{listings.length !== 1 ? 's' : ''} available</p>
+          <p className="page-subtitle">
+            {listings.length} room{listings.length !== 1 ? 's' : ''} available
+          </p>
         </div>
         <Link to="/create" className="btn-primary">
           + Add Listing
@@ -84,7 +75,7 @@ const ViewAll = () => {
       </div>
 
       <div className="card-grid">
-        {listings.map(listing => (
+        {listings.map((listing) => (
           <Link to={`/view/${listing.id}`} key={listing.id} className="listing-card">
             {listing.imageUrl ? (
               <img src={listing.imageUrl} alt={listing.title} className="card-image" />
@@ -100,6 +91,13 @@ const ViewAll = () => {
                 <span className="card-tag">{listing.roomType}</span>
                 <span className="card-tag">{listing.furnished}</span>
               </div>
+
+              {/* Posted-by line — only renders for listings with createdBy field */}
+              {listing.createdBy && (
+                <p className="listing-poster" style={{ margin: '0.5rem 0 0.75rem' }}>
+                  by <strong>{listing.createdBy.displayName}</strong>
+                </p>
+              )}
 
               <div className="card-footer">
                 <span className="card-rent">PKR {listing.rent?.toLocaleString()}/mo</span>

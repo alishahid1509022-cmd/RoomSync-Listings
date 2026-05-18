@@ -2,21 +2,25 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { doc, getDoc, deleteDoc } from 'firebase/firestore'
 import { db } from '../firebase/config'
+import { useAuth } from '../contexts/AuthContext'
 
 const ViewSingle = () => {
-  const { id } = useParams()           // Read :id from URL
+  const { id } = useParams()
   const navigate = useNavigate()
+  const { currentUser } = useAuth()
 
   const [listing, setListing] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [deleting, setDeleting] = useState(false)
 
+  // Computed AFTER listing is declared. Safe to use anywhere below.
+  const isOwner = currentUser && listing?.createdBy?.uid === currentUser.uid
+
   // Fetch the single listing when component mounts (or id changes)
   useEffect(() => {
     const fetchListing = async () => {
       try {
-        // Reference to ONE specific document by ID
         const docRef = doc(db, 'listings', id)
         const snapshot = await getDoc(docRef)
 
@@ -34,9 +38,10 @@ const ViewSingle = () => {
     }
 
     fetchListing()
-  }, [id])  // Re-run if URL id changes
+  }, [id])
 
-  // Delete handler
+  // Delete handler — only callable from the Delete button, which only shows for owners.
+  // Firestore rules also enforce this server-side as a second layer of defense.
   const handleDelete = async () => {
     const confirmed = window.confirm(
       `Delete "${listing.title}"? This cannot be undone.`
@@ -47,7 +52,7 @@ const ViewSingle = () => {
     try {
       const docRef = doc(db, 'listings', id)
       await deleteDoc(docRef)
-      navigate('/all')  // Go back to list after deletion
+      navigate('/all')
     } catch (err) {
       console.error('Error deleting listing:', err)
       setError('Failed to delete listing.')
@@ -55,14 +60,13 @@ const ViewSingle = () => {
     }
   }
 
-  // Format Firestore timestamp into a readable date
   const formatDate = (timestamp) => {
     if (!timestamp) return 'Unknown'
     const date = timestamp.toDate()
     return date.toLocaleDateString('en-PK', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     })
   }
 
@@ -126,20 +130,32 @@ const ViewSingle = () => {
             </div>
           </div>
 
+          {/* Posted-by line — only shows for listings created after Phase 11 */}
+          {listing.createdBy && (
+            <p className="listing-poster">
+              Posted by <strong>{listing.createdBy.displayName}</strong>
+              {' '}<span className="poster-email">({listing.createdBy.email})</span>
+            </p>
+          )}
+
           <p className="detail-meta">Listed on {formatDate(listing.createdAt)}</p>
 
-          <div className="detail-actions">
-            <Link to={`/edit/${listing.id}`} className="btn-primary">
-              ✏️ Edit Listing
-            </Link>
-            <button
-              onClick={handleDelete}
-              className="btn-danger"
-              disabled={deleting}
-            >
-              {deleting ? 'Deleting...' : '🗑️ Delete Listing'}
-            </button>
-          </div>
+          {/* Edit/Delete buttons — only visible if the logged-in user owns this listing.
+              Firestore rules also enforce this at the database level. */}
+          {isOwner && (
+            <div className="detail-actions">
+              <Link to={`/edit/${listing.id}`} className="btn-primary">
+                ✏️ Edit Listing
+              </Link>
+              <button
+                onClick={handleDelete}
+                className="btn-danger"
+                disabled={deleting}
+              >
+                {deleting ? 'Deleting...' : '🗑️ Delete Listing'}
+              </button>
+            </div>
+          )}
         </div>
       </article>
     </div>
