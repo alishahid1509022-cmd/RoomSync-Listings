@@ -1,12 +1,6 @@
 {
-  "firestore": {
-    "database": "(default)",
-    "location": "asia-east1",
-    "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
-  },
   "hosting": {
-    "public": "roomsync-listings/dist",
+    "public": "dist",
     "ignore": [
       "firebase.json",
       "**/.*",
