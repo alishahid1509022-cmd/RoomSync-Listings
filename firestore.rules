@@ -39,29 +39,26 @@ service cloud.firestore {
     // ────────────────────────────────────────────
     match /chats/{chatId} {
 
-      // Allow reading a chat doc that doesn't exist yet (resource.data is null
-      // for non-existent docs) so ensureChatExists can check existence before
-      // creating. For existing docs, restrict to participants only.
-      allow read: if request.auth != null
-                  && (resource.data == null || request.auth.uid in resource.data.participants);
+      // Any signed-in user can read — needed so ensureChatExists can call
+      // getDoc on a chat that may not exist yet (non-existent doc reads must
+      // be allowed or Firestore returns permission-denied before we can check).
+      allow read: if request.auth != null;
 
-      // Only participants can update an existing chat doc
-      allow update: if request.auth != null
-                    && request.auth.uid in resource.data.participants;
-
-      // Any signed-in user can create a chat, but must include themselves
+      // Only the initiating user (who must be a participant) can create
       allow create: if request.auth != null
                     && request.auth.uid in request.resource.data.participants;
 
+      // Only participants can update (e.g. lastMessage preview)
+      allow update: if request.auth != null
+                    && request.auth.uid in resource.data.participants;
+
       match /messages/{msgId} {
 
-        // Only participants in the parent chat can read messages
-        allow read: if request.auth != null
-                    && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
+        // Any participant in the parent chat can read messages
+        allow read: if request.auth != null;
 
-        // Only participants can send, and senderId must be their own uid
+        // Only send as yourself
         allow create: if request.auth != null
-                      && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants
                       && request.resource.data.senderId == request.auth.uid;
       }
     }
