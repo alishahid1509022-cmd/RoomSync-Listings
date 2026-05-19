@@ -20,5 +20,44 @@ service cloud.firestore {
       allow update, delete: if request.auth != null
                             && resource.data.createdBy.uid == request.auth.uid;
     }
+
+    // ────────────────────────────────────────────
+    // users collection
+    // ────────────────────────────────────────────
+    match /users/{userId} {
+
+      // Any signed-in user can read profiles (needed for chat user list + conversation headers)
+      allow read: if request.auth != null;
+
+      // Users can only write their own document
+      allow create, update: if request.auth != null
+                            && request.auth.uid == userId;
+    }
+
+    // ────────────────────────────────────────────
+    // chats collection
+    // ────────────────────────────────────────────
+    match /chats/{chatId} {
+
+      // Only participants can read or update the chat doc
+      allow read, update: if request.auth != null
+                          && request.auth.uid in resource.data.participants;
+
+      // Any signed-in user can create a chat, but must include themselves
+      allow create: if request.auth != null
+                    && request.auth.uid in request.resource.data.participants;
+
+      match /messages/{msgId} {
+
+        // Only participants in the parent chat can read messages
+        allow read: if request.auth != null
+                    && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
+
+        // Only participants can send, and senderId must be their own uid
+        allow create: if request.auth != null
+                      && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants
+                      && request.resource.data.senderId == request.auth.uid;
+      }
+    }
   }
 }

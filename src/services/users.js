@@ -1,11 +1,3 @@
-// src/services/users.js
-// All Firestore operations related to the `users` collection.
-//
-// Why a separate file from auth.js?
-// - auth.js talks to Firebase AUTH (the identity system: passwords, sessions, etc.)
-// - users.js talks to Firebase FIRESTORE (our app's own database of user profiles)
-// These are two different Firebase services. Keeping them in different files
-// makes it easier to reason about who is doing what.
 
 import {
   doc,
