@@ -61,12 +61,8 @@ const ChatConversation = () => {
 
         // 1. Load the other user's profile (for the header)
         const profile = await getUserProfile(otherUserId)
-        if (!profile) {
-          setError('User not found.')
-          setLoading(false)
-          return
-        }
-        setOtherUser(profile)
+        // Fall back to a minimal object if no Firestore doc exists yet
+        setOtherUser(profile ?? { uid: otherUserId, displayName: 'User', email: '' })
 
         // 2. Make sure the chat doc exists (creates it on first message ever)
         await ensureChatExists(currentUser.uid, otherUserId)

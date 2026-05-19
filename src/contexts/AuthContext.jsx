@@ -10,7 +10,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '../firebase/config'
-import { getUserProfile, ROLES } from '../services/users'
+import { getUserProfile, ensureUserDocument, ROLES } from '../services/users'
 
 // 1. Create the Context object (the "broadcast channel")
 const AuthContext = createContext(null)
@@ -44,13 +44,17 @@ export function AuthProvider({ children }) {
         // SIGNED IN — set the auth user immediately, then fetch the profile.
         setCurrentUser(user)
         try {
-          const profile = await getUserProfile(user.uid)
+          let profile = await getUserProfile(user.uid)
+          if (!profile) {
+            // No Firestore doc yet — create it now. This handles users who
+            // signed up before ensureUserDocument was wired up, or whose
+            // doc creation failed previously due to missing Firestore rules.
+            const provider = user.providerData[0]?.providerId === 'google.com'
+              ? 'google'
+              : 'password'
+            profile = await ensureUserDocument(user, provider)
+          }
           setUserProfile(profile)
-          // If profile is null here, it means a user exists in Firebase Auth
-          // but has no Firestore doc. Shouldn't happen for accounts created
-          // through our app (ensureUserDocument runs at signup/signin), but
-          // could happen for accounts created manually in the Firebase Console.
-          // We just leave userProfile as null and let the app handle it.
         } catch (err) {
           console.error('Failed to load user profile from Firestore:', err)
           setUserProfile(null)
