@@ -46,7 +46,7 @@ const Signup = () => {
         displayName: formData.displayName,
       })
       // After signup the user is automatically signed in by Firebase.
-      navigate('/', { replace: true })
+      navigate('/my-listings', { replace: true })
     } catch (err) {
       console.error('Signup error:', err)
       const message = getAuthErrorMessage(err)
@@ -60,7 +60,7 @@ const Signup = () => {
     setError('')
     try {
       await signInWithGoogle()
-      navigate('/', { replace: true })
+      navigate('/my-listings', { replace: true })
     } catch (err) {
       console.error('Google sign-in error:', err)
       const message = getAuthErrorMessage(err)

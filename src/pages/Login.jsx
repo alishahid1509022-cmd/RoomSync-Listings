@@ -18,7 +18,7 @@ const Login = () => {
   // If the user was redirected here from a protected route,
   // Phase 8's ProtectedRoute will pass `from` in location.state
   // so we can send them back where they originally wanted to go.
-  const redirectTo = location.state?.from?.pathname || '/'
+  const redirectTo = location.state?.from?.pathname || '/my-listings'
 
   const handleChange = (e) => {
     const { name, value } = e.target

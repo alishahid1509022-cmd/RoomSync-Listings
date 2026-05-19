@@ -24,4 +24,7 @@ export const db = getFirestore(app)
 export const auth = getAuth(app)
 
 // Google sign-in provider — reused across the app
+// prompt: 'select_account' forces the account picker every time instead of
+// silently reusing the last signed-in Google account.
 export const googleProvider = new GoogleAuthProvider()
+googleProvider.setCustomParameters({ prompt: 'select_account' })
