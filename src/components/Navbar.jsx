@@ -5,7 +5,7 @@ import { signOutUser } from '../services/auth'
 
 const Navbar = () => {
   const [darkMode, setDarkMode] = useState(false)
-  const { currentUser, isLoggedIn } = useAuth()
+  const { currentUser, isLoggedIn, isAdmin } = useAuth()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -25,7 +25,6 @@ const Navbar = () => {
     }
   }
 
-  // Just the user's first name, falls back to email if no displayName set
   const greetingName =
     currentUser?.displayName?.split(' ')[0] ||
     currentUser?.email?.split('@')[0] ||
@@ -51,11 +50,44 @@ const Navbar = () => {
             </NavLink>
           </li>
 
-          {/* Show "Add Listing" only when logged in (clicking it would redirect anyway, but cleaner this way) */}
           {isLoggedIn && (
             <li>
               <NavLink to="/create" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
                 Add Listing
+              </NavLink>
+            </li>
+          )}
+
+          {isLoggedIn && (
+            <li>
+              <NavLink
+                to="/my-listings"
+                className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
+              >
+                My Listings
+              </NavLink>
+            </li>
+          )}
+
+          {/* Messages — any logged-in user can access chat */}
+          {isLoggedIn && (
+            <li>
+              <NavLink
+                to="/chat"
+                className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
+              >
+                💬 Messages
+              </NavLink>
+            </li>
+          )}
+
+          {isLoggedIn && isAdmin && (
+            <li>
+              <NavLink
+                to="/admin"
+                className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
+              >
+                🛡️ Admin
               </NavLink>
             </li>
           )}

@@ -15,6 +15,7 @@ import {
 } from 'firebase/auth'
 
 import { auth, googleProvider } from '../firebase/config'
+import { ensureUserDocument } from './users'
 
 // ──────────────────────────────────────────────────────────────
 // 1. CREATE USER (Sign up with email + password)
@@ -30,6 +31,9 @@ export async function signUpWithEmail({ email, password, displayName }) {
   if (displayName) {
     await updateProfile(credential.user, { displayName })
   }
+  // Create the matching Firestore user profile (with role="user" by default).
+  // We do this AFTER updateProfile so the doc captures the displayName.
+  await ensureUserDocument(credential.user, 'password')
   return credential.user
 }
 
@@ -40,6 +44,9 @@ export async function signUpWithEmail({ email, password, displayName }) {
 // Throws:  'auth/wrong-password', 'auth/user-not-found', etc.
 export async function signInWithEmail({ email, password }) {
   const credential = await signInWithEmailAndPassword(auth, email, password)
+  // Update lastLogin timestamp; safe to call even if the doc already exists.
+  // Won't overwrite role or createdAt — see ensureUserDocument for details.
+  await ensureUserDocument(credential.user, 'password')
   return credential.user
 }
 
@@ -128,6 +135,10 @@ export async function updateUserProfile({ displayName, photoURL }) {
 // silent cancel, not an error.
 export async function signInWithGoogle() {
   const credential = await signInWithPopup(auth, googleProvider)
+  // First-time Google users get a fresh user doc; returning users get
+  // their lastLogin updated. The 'google' authProvider tag is just for
+  // analytics / debugging — security rules don't depend on it.
+  await ensureUserDocument(credential.user, 'google')
   return credential.user
 }
 
