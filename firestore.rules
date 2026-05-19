@@ -39,9 +39,15 @@ service cloud.firestore {
     // ────────────────────────────────────────────
     match /chats/{chatId} {
 
-      // Only participants can read or update the chat doc
-      allow read, update: if request.auth != null
-                          && request.auth.uid in resource.data.participants;
+      // Allow reading a chat doc that doesn't exist yet (resource.data is null
+      // for non-existent docs) so ensureChatExists can check existence before
+      // creating. For existing docs, restrict to participants only.
+      allow read: if request.auth != null
+                  && (resource.data == null || request.auth.uid in resource.data.participants);
+
+      // Only participants can update an existing chat doc
+      allow update: if request.auth != null
+                    && request.auth.uid in resource.data.participants;
 
       // Any signed-in user can create a chat, but must include themselves
       allow create: if request.auth != null
